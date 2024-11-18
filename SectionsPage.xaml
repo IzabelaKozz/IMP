@@ -1,0 +1,30 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:IMP.ViewModels"
+             x:Class="IMP.SectionsPage"
+             Title="Sections">
+    <ContentPage.BindingContext>
+        <viewModels:SectionsViewModel />
+    </ContentPage.BindingContext>
+
+    <StackLayout Padding="20" Spacing="10">
+        <Entry Placeholder="Section Name" Text="{Binding SectionName}" />
+        <Entry Placeholder="Start Time (e.g., 08:00)" Text="{Binding StartTime}" />
+        <Entry Placeholder="Duration (e.g., 20 min)" Text="{Binding Duration}" />
+        <Entry Placeholder="Selected Days (e.g., pn, wt)" Text="{Binding SelectedDays}" />
+
+        <Button Text="Add Section" Command="{Binding AddSectionCommand}" />
+
+        <CollectionView ItemsSource="{Binding Sections}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Padding="10" Orientation="Vertical">
+                        <Label Text="{Binding Name}" FontAttributes="Bold" />
+                        <Label Text="{Binding StartTime}" />
+                        <Label Text="{Binding Duration}" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
+</ContentPage>
