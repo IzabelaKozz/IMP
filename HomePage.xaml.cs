@@ -1,17 +1,16 @@
 ﻿using IMP.ViewModels;
 using Firebase.Auth;
-using Google.Cloud.Firestore;
-
+using IMP.Services;
 
 namespace IMP
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class HomePage : ContentPage
     {
-        public HomePage(string userEmail)
+        public HomePage(string userId)
         {
             InitializeComponent();
-            BindingContext = new HomeViewModel(Navigation, userEmail); // Przekazujemy userId
+            BindingContext = new HomeViewModel(Navigation, userId); // Przekazujemy userId
         }
     }
 }

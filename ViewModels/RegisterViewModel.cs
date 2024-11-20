@@ -1,19 +1,25 @@
 ﻿using Firebase.Auth;
-using IMP.Services;
+using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 using System.Windows.Input;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Storage;
+using IMP.Services; // Importowanie serwisu
+using Firebase.Database;
 
 namespace IMP.ViewModels
 {
-    internal class RegisterViewModel : INotifyPropertyChanged
+    public class RegisterViewModel : INotifyPropertyChanged
     {
-        private readonly string webApiKey = "AIzaSyDNtwI02aWPPvuGGK22Hm8LskD6soyIpZY";
-        private INavigation _navigation;
         private string email;
         private string password;
         private string repeatPassword;
+        private readonly RealtimeDatabaseService _realtimeDatabaseService;  // Referencja do serwisu
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public ICommand RegisterUser { get; }
 
         public string Email
         {
@@ -45,11 +51,9 @@ namespace IMP.ViewModels
             }
         }
 
-        public ICommand RegisterUser { get; }
-
-        public RegisterViewModel(INavigation navigation)
+        public RegisterViewModel()
         {
-            _navigation = navigation;
+            _realtimeDatabaseService = new RealtimeDatabaseService();  // Inicjalizacja serwisu
             RegisterUser = new Command(RegisterUserTappedAsync);
         }
 
@@ -57,43 +61,36 @@ namespace IMP.ViewModels
         {
             if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password) || string.IsNullOrEmpty(RepeatPassword))
             {
-                await App.Current.MainPage.DisplayAlert("Alert", "Please enter email and both password fields.", "OK");
+                await Application.Current.MainPage.DisplayAlert("Alert", "Please enter email and both password fields.", "OK");
                 return;
             }
 
             if (Password != RepeatPassword)
             {
-                await App.Current.MainPage.DisplayAlert("Alert", "Passwords do not match.", "OK");
+                await Application.Current.MainPage.DisplayAlert("Alert", "Passwords do not match.", "OK");
                 return;
             }
 
             try
             {
-                // Logowanie: Rozpoczęcie procesu rejestracji
-                Console.WriteLine($"[DEBUG] Attempting to register user with email: {Email}");
-
-                var authProvider = new FirebaseAuthProvider(new FirebaseConfig(webApiKey));
+                // Firebase Authentication - Rejestracja użytkownika
+                var authProvider = new FirebaseAuthProvider(new FirebaseConfig("AIzaSyDNtwI02aWPPvuGGK22Hm8LskD6soyIpZY"));
                 var auth = await authProvider.CreateUserWithEmailAndPasswordAsync(Email, Password);
 
                 string userId = auth.User.LocalId;
+                string email = auth.User.Email;
 
-                // Logowanie: Firebase Authentication zakończone
-                Console.WriteLine($"[DEBUG] User registered in Firebase Authentication with ID: {userId}");
+                // Zapisanie użytkownika do Realtime Database za pomocą serwisu
+                await _realtimeDatabaseService.AddUserAsync(userId, email);  // Dodaj użytkownika do Realtime Database
 
-                // Dodanie użytkownika do Firestore
-                var firestoreService = new FirestoreService();
-                await firestoreService.AddUserAsync(userId, Email);
+                // Przekierowanie na stronę główną po udanej rejestracji
+                await Application.Current.MainPage.Navigation.PushAsync(new HomePage(userId));  // Używamy userId, aby przekazać go do HomePage
 
-                // Logowanie: Użytkownik dodany do Firestore
-                Console.WriteLine($"[DEBUG] User added to Firestore with ID: {userId}");
-
-                await App.Current.MainPage.DisplayAlert("Alert", "User Registered successfully", "OK");
-                await _navigation.PopAsync();
+                await Application.Current.MainPage.DisplayAlert("Alert", "User Registered successfully", "OK");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] {ex.Message}");
-                await App.Current.MainPage.DisplayAlert("Alert", ex.Message, "OK");
+                await Application.Current.MainPage.DisplayAlert("Alert", ex.Message, "OK");
             }
         }
 

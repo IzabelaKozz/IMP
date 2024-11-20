@@ -10,22 +10,20 @@ namespace IMP.ViewModels
     public class HomeViewModel : BindableObject
     {
         private readonly INavigation _navigation;
-        private readonly string _userEmail; // Dodajemy userId
+        private readonly string _userId; // Zmiana z userEmail na userId
 
         public ICommand NavigateToSectionsCommand { get; }
 
-        public HomeViewModel(INavigation navigation, string userEmail)
+        public HomeViewModel(INavigation navigation, string userId)
         {
             _navigation = navigation;
-            _userEmail = userEmail; // Przypisujemy email
+            _userId = userId; // Przypisujemy userId
             NavigateToSectionsCommand = new Command(async () => await NavigateToSections());
         }
 
-
         private async Task NavigateToSections()
         {
-            await _navigation.PushAsync(new SectionsPage(_userEmail)); // Przekazujemy email do SectionsPage
+            await _navigation.PushAsync(new SectionsPage(_userId)); // Przekazujemy userId do SectionsPage
         }
-
     }
 }

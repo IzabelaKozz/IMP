@@ -2,21 +2,22 @@
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage; // Użycie Preferences
-using IMP.Services; // Dodaj tę linię na górze pliku
-
-using Google.Cloud.Firestore;
+using Microsoft.Maui.Controls;
+using Firebase.Database.Query;
+using IMP.ViewModels;
 
 namespace IMP.ViewModels
 {
     internal class LoginViewModel : INotifyPropertyChanged
     {
-        private readonly string webApiKey = "AIzaSyDNtwI02aWPPvuGGK22Hm8LskD6soyIpZY"; // Wstaw swój rzeczywisty klucz API
+        private readonly string webApiKey = "AIzaSyDNtwI02aWPPvuGGK22Hm8LskD6soyIpZY"; // Twój klucz API
         private readonly INavigation _navigation;
         private string userName;
         private string userPassword;
+        private string userId;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -43,14 +44,24 @@ namespace IMP.ViewModels
             }
         }
 
+        public string UserId
+        {
+            get => userId;
+            private set
+            {
+                userId = value;
+                RaisePropertyChanged(nameof(UserId));
+            }
+        }
+
         public LoginViewModel(INavigation navigation)
         {
             _navigation = navigation;
             RegisterBtn = new Command(RegisterBtnTappedAsync);
-            LoginBtn = new Command(LoginBtnTappedAsync);
+            LoginBtn = new Command(async () => await LoginAsync());
         }
 
-        private async void LoginBtnTappedAsync(object obj)
+        public async Task<bool> LoginAsync()
         {
             var authProvider = new FirebaseAuthProvider(new FirebaseConfig(webApiKey));
             try
@@ -58,27 +69,24 @@ namespace IMP.ViewModels
                 // Logowanie użytkownika
                 var auth = await authProvider.SignInWithEmailAndPasswordAsync(UserName, UserPassword);
 
-                string userId = auth.User.LocalId;
+                UserId = auth.User.LocalId;
                 string email = auth.User.Email;
 
-                // Zapisanie tokena użytkownika do Preferences
-                var serializedToken = JsonConvert.SerializeObject(auth);
-                Preferences.Set("FirebaseAuthToken", serializedToken);
+                // Zapisanie użytkownika w Realtime Database
+                var firebaseClient = new Firebase.Database.FirebaseClient("https://impdb-557fa-default-rtdb.europe-west1.firebasedatabase.app");
+                var user = new { Email = email, UserId };
+                await firebaseClient.Child("users").Child(UserId).PutAsync(user);
 
-                // Dodanie użytkownika do Firestore
-                var firestoreService = new FirestoreService();
-                await firestoreService.AddUserAsync(userId, email);
+                // Przekierowanie na stronę HomePage po udanym logowaniu
+                await _navigation.PushAsync(new HomePage(UserId));
 
-                // Przekierowanie do HomePage po udanym logowaniu
-                await _navigation.PushAsync(new HomePage(userId));
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                await Application.Current.MainPage.DisplayAlert("Alert", "Logowanie nie powiodło się: " + ex.Message, "OK");
+                return false;
             }
         }
-
-
 
         private async void RegisterBtnTappedAsync(object obj)
         {

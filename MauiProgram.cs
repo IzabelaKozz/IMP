@@ -1,25 +1,19 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Firebase.Database;
 
-namespace IMP
+namespace IMP;
+
+public static class MauiProgram
 {
-    public static class MauiProgram
+    public static MauiApp CreateMauiApp()
     {
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-            builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>();
 
-#if DEBUG
-            builder.Logging.AddDebug();
-#endif
+        // Inicjalizacja Firebase Database
+        var firebaseUrl = "https://impdb-557fa-default-rtdb.europe-west1.firebasedatabase.app/";
+        var firebaseClient = new FirebaseClient(firebaseUrl);
 
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

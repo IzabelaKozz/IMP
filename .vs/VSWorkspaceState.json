@@ -5,12 +5,11 @@
     "\\Platforms",
     "\\Platforms\\Android",
     "\\Platforms\\Android\\Resources",
-    "\\Platforms\\Android\\Resources\\Raw",
     "\\Resources",
     "\\Resources\\Raw",
     "\\Services",
     "\\ViewModels"
   ],
-  "SelectedNode": "\\ViewModels\\SectionsViewModel.cs",
+  "SelectedNode": "\\IMP.sln",
   "PreviewInSolutionExplorer": false
 }

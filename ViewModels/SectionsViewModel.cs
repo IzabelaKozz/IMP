@@ -1,72 +1,47 @@
 ﻿using IMP.Models;
 using IMP.Services;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Firebase;
+using Firebase.Auth;
+using Firebase.Database;
 
 namespace IMP.ViewModels
 {
-    public class SectionsViewModel : BaseViewModel
+    public class SectionsViewModel
     {
-        private readonly FirestoreService _firestoreService;
-        private readonly string _userEmail;
+        private readonly RealtimeDatabaseService _databaseService;
+        public List<Section> Sections { get; set; }
 
-        public ObservableCollection<Section> Sections { get; set; }
-        public string SectionName { get; set; }
-        public string StartTime { get; set; }
-        public string Duration { get; set; }
-        public List<string> SelectedDays { get; set; } = new List<string>();
-
-        public ICommand AddSectionCommand { get; }
-
-        // Konstruktor bez argumentów (opcjonalny, ale przydatny dla XAML)
         public SectionsViewModel()
         {
-            _firestoreService = new FirestoreService();
-            Sections = new ObservableCollection<Section>();
-            AddSectionCommand = new Command(async () => await AddSection());
-
-            LoadSections();
+            _databaseService = new RealtimeDatabaseService();
+            Sections = new List<Section>();
         }
 
-        // Konstruktor przyjmujący email użytkownika
-        public SectionsViewModel(string userEmail) : this() // Wywołanie domyślnego konstruktora
+        // Metoda do pobierania sekcji dla zalogowanego użytkownika
+        public async Task GetSections(string userId)
         {
-            _userEmail = userEmail;
+            Sections = await _databaseService.GetSections(userId);
         }
 
-        private async void LoadSections()
+        // Metoda do dodawania sekcji dla zalogowanego użytkownika
+        public async Task AddSection(string userId, Section section)
         {
-            var userId = "userId123"; // Pobierz UID użytkownika na podstawie _userEmail (jeśli to konieczne)
-            var sections = await _firestoreService.GetSectionsAsync(userId);
+            await _databaseService.AddSection(userId, section);
+            Sections.Add(section);  // Dodaj sekcję do listy
+        }
 
-            foreach (var section in sections)
+        // Metoda do usuwania sekcji
+        public async Task DeleteSection(string userId, string sectionId)
+        {
+            await _databaseService.DeleteSection(userId, sectionId);
+            var sectionToRemove = Sections.FirstOrDefault(s => s.Id == sectionId);
+            if (sectionToRemove != null)
             {
-                Sections.Add(section);
+                Sections.Remove(sectionToRemove);  // Usuń sekcję z listy
             }
-        }
-
-        private async Task AddSection()
-        {
-            if (string.IsNullOrEmpty(SectionName) || string.IsNullOrEmpty(StartTime) || string.IsNullOrEmpty(Duration))
-            {
-                Console.WriteLine("All fields are required.");
-                return;
-            }
-
-            var section = new Section
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserId = "userId123", // Pobierz UID zalogowanego użytkownika
-                Name = SectionName,
-                StartTime = StartTime,
-                Duration = Duration,
-                SelectedDays = SelectedDays
-            };
-
-            await _firestoreService.AddSectionAsync(section);
-
-            Sections.Add(section);
-            Console.WriteLine("Section added.");
         }
     }
 }

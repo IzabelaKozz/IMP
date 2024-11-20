@@ -12,7 +12,7 @@ namespace IMP
         public RegisterPage()
         {
             InitializeComponent();
-            BindingContext = new RegisterViewModel(Navigation);
+            BindingContext = new RegisterViewModel();
         }
 
         private void OnTogglePasswordVisibilityClicked(object sender, EventArgs e)

@@ -15,7 +15,7 @@ layout\navigationlayout;layout\navigationlayout
 layout\shellcontent;compatibility\Android\Resources\layout\shellcontent
 layout\tabbar;android\Resources\layout\Tabbar
 layout\toolbar;android\Resources\layout\Toolbar
-raw\google-services;raw\google-services
+platforms\android\google-services;platforms\Android\google-services
 values\attr;values\attr
 values\attrs;android\Resources\values\attrs
 values\colors;values\colors

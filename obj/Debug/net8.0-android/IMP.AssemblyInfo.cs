@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IMP")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+ed51f3dec7dfcb1e2843f0bd4358939c1157d8ef")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+12b9debc8cae32a8ed4330a75ede87caaddf8d14")]
 [assembly: System.Reflection.AssemblyProductAttribute("IMP")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IMP")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -60,15 +60,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<MauiAsset Include="Resources\Raw\impdb-557fa-firebase-adminsdk-7gw7l-be2ef53692.json" />
+	  <AndroidResource Remove="Platforms\Android\Resources\Raw\**" />
+	  <Compile Remove="Platforms\Android\Resources\Raw\**" />
+	  <EmbeddedResource Remove="Platforms\Android\Resources\Raw\**" />
+	  <MauiCss Remove="Platforms\Android\Resources\Raw\**" />
+	  <MauiXaml Remove="Platforms\Android\Resources\Raw\**" />
+	  <None Remove="Platforms\Android\Resources\Raw\**" />
 	</ItemGroup>
+
 	<ItemGroup>
-		<AndroidResource Include="Platforms\Android\Resources\Raw\google-services.json" />
+		<AndroidResource Include="Platforms\Android\google-services.json" />
 	</ItemGroup>
-
 	
-
-
+	<ItemGroup>
+		<MauiAssets Include="Resources\Raw\impdb-557fa-firebase-adminsdk-7gw7l-a25e9f8bac.json" />
+	</ItemGroup>
 	<ItemGroup>
 		<MauiXaml Update="HomePage.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -102,12 +108,15 @@
 
 	<ItemGroup>
 		<PackageReference Include="Firebase.Auth" Version="1.0.0" />
-		<PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
-		<PackageReference Include="Google.Cloud.Firestore" Version="3.9.0" />
+		<PackageReference Include="FirebaseDatabase.net" Version="4.2.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+		<PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+		<PackageReference Include="System.Net.Primitives" Version="4.3.0" />
+		<PackageReference Include="System.Collections" Version="4.3.0" />
 	</ItemGroup>
 
 

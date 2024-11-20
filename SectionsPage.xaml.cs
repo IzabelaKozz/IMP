@@ -5,15 +5,16 @@ namespace IMP
 {
     public partial class SectionsPage : ContentPage
     {
-        private readonly string _userEmail;
+        private readonly string _userId;
 
-        public SectionsPage(string userEmail)
+        public SectionsPage(string userId)
         {
             InitializeComponent();
-            _userEmail = userEmail;
+            _userId = userId;
 
-            // Przekazujemy email do ViewModelu
-            BindingContext = new SectionsViewModel(_userEmail);
+            // Przekazujemy userId do ViewModelu
+            BindingContext = new SectionsViewModel();
+        
         }
     }
 }
